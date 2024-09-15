@@ -1,0 +1,17 @@
+{
+	"name": "saas-boiler-cli",
+	"type": "module",
+	"version": "1.0.0",
+	"description": "CLI tool for rapidStack",
+	"main": "cli/index.js",
+	"bin": "cli/index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "eunice99x",
+	"license": "ISC",
+	"dependencies": {
+		"fs-extra": "^11.2.0",
+		"inquirer": "^10.2.2"
+	}
+}
