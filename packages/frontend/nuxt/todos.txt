@@ -1,0 +1,124 @@
+1. Header (Navbar)
+Purpose: A responsive navigation bar that includes links to other pages (e.g., Home, Pricing, Features, Sign In, Sign Up).
+Key Features:
+Company logo
+Navigation links
+CTA buttons (e.g., "Sign In" and "Get Started")
+Hamburger menu for mobile view
+Dropdown menus (if needed)
+Example Sections:
+
+<Header />
+<NavLink />
+
+
+
+2. Hero Section
+Purpose: A welcoming section that highlights your product's key features and a compelling call-to-action (CTA).
+Key Features:
+Title, description, and a few brief highlights about the SaaS offering
+CTA buttons like "Start Free Trial" or "Learn More"
+Option to add background image or illustration
+Support for embedding a video or graphic to showcase the product
+Example Sections:
+
+<Hero />
+3. Features Section
+Purpose: Showcase the main benefits and features of your SaaS product.
+Key Features:
+Highlight 3–4 key features with icons or illustrations
+Add short descriptions for each feature
+Responsive grid layout
+Example Sections:
+
+<Features />
+<FeatureItem /> (For reusable feature cards)
+4. Pricing Section
+Purpose: The section where your pricing cards will be displayed.
+Key Features:
+Add all your pricing cards (Card1, Card2, etc.) in a responsive grid layout.
+Option to toggle between monthly and annual pricing (optional, based on your SaaS).
+Highlight the "Most Popular" plan.
+Example Sections:
+
+<Pricing />
+5. Testimonials Section
+Purpose: Social proof through customer testimonials, reviews, or success stories.
+Key Features:
+Display quotes from users or customers
+Include user images, names, and titles
+Could have a slider feature to scroll through multiple testimonials
+Example Sections:
+
+<Testimonials />
+<TestimonialItem />
+6. FAQ (Frequently Asked Questions)
+Purpose: A section to answer common questions that customers might have.
+Key Features:
+Expandable/collapsible FAQ items
+Questions with concise and clear answers
+Interactive icons to indicate expand/collapse state
+Example Sections:
+
+<FAQ />
+<FAQItem />
+7. Footer
+Purpose: A footer that contains links, social media, and contact information.
+Key Features:
+Company logo and a short description
+Navigation links to pages like About, Terms, Privacy Policy, and Help
+Social media icons
+Newsletter signup form
+Example Sections:
+
+<Footer />
+<SocialIcons />
+8. Sign Up & Sign In Forms
+Purpose: Secure authentication components where users can sign up or sign in.
+Key Features:
+Input fields for email, password, and confirm password (for Sign Up)
+Password reset option (for Sign In)
+Integration with NextAuth or Clerk for authentication
+Tailored validation for inputs
+Third-party login options (Google, Facebook, etc.)
+Example Sections:
+
+<SignUpForm />
+<SignInForm />
+<ForgotPassword />
+9. Plan Comparison Table (Optional)
+Purpose: Compare features between different pricing tiers to help users decide which plan is right for them.
+Key Features:
+Table comparing multiple plans side-by-side
+Highlight differences in features for each plan
+Call-to-action buttons under each plan
+Example Sections:
+
+<PlanComparison />
+10. Call to Action (CTA) Banner
+Purpose: A section with a strong call to action to encourage users to sign up or start a free trial.
+Key Features:
+A short, compelling message
+CTA buttons (e.g., "Start Free Trial", "Get Started")
+Background image or pattern to make it visually appealing
+Example Sections:
+
+<CTABanner />
+11. Newsletter Signup
+Purpose: A simple form where users can subscribe to your newsletter.
+Key Features:
+Email input field with validation
+Submit button
+Success message on submission
+Example Sections:
+
+<NewsletterSignup />
+12. Modal for Payment
+Purpose: A modal or popup that handles payment information when users click on the "Choose Plan" button from pricing cards.
+Key Features:
+Input fields for card details, billing information, etc.
+Integration with Stripe, Lemon Squeezy, or PayPal
+Secure submission
+Example Sections:
+
+<PaymentModal />
