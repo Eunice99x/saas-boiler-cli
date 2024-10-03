@@ -1,7 +1,7 @@
 <template>
   <!-- default layout -->
   <div>
-    <HeaderHeader3 />
+    <HeaderHeader2 />
     <slot />
     <FooterFooter1 />
     <FooterFooter2 />
@@ -12,5 +12,4 @@
 </template>
 
 <script lang="ts" setup></script>
-
 <style></style>

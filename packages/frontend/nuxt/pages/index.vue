@@ -1,9 +1,15 @@
 <template>
   <div>
     <HeroHero3 />
-
+    <FAQFAQ4 />
+    <FeaturesFeatures1 />
+    <ForgetPasswordForgetPassword3 />
+    <SignupSignup3 />
+    <LoginLogin3 />
+    <TestimonialsTestimonials1 />
     <div
-      class="py-10 flex flex-col space-y-8 justify-center items-center min-h-screen bg-gray-100">
+      class="py-10 flex flex-col space-y-8 justify-center items-center min-h-screen bg-gray-100"
+    >
       <PricingCard1
         title="Basic Plan"
         :price="19.99"
@@ -13,7 +19,8 @@
           'Basic Support',
           'Email Notifications',
         ]"
-        buttonText="Choose Plan" />
+        buttonText="Choose Plan"
+      />
       <PricingCard2
         title="Pro Plan"
         :price="49.99"
@@ -23,7 +30,8 @@
           'Priority Support',
           'Email & SMS Notifications',
         ]"
-        buttonText="Choose Plan" />
+        buttonText="Choose Plan"
+      />
 
       <PricingCard3
         title="Enterprise Plan"
@@ -35,7 +43,8 @@
           'Email, SMS & Phone Notifications',
         ]"
         buttonText="Choose Plan"
-        isPopular />
+        isPopular
+      />
     </div>
   </div>
 </template>
