@@ -70,7 +70,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "myproject.wsgi.application"
 
-
+AUTH_USER_MODEL = "main.User"
+ACCOUNT_USER_MODEL_USERNAME_FIELD = "email"
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
