@@ -1,0 +1,1 @@
+1.Review the code because there is code I used Copilot with, and it managed to generate unnecessary lines. I'm going to check for them and add types for Next.js TypeScript version.

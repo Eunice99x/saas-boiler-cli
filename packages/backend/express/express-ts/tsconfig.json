@@ -1,0 +1,5 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true // when i create tsconfig.json it fix a problem of type:module and this line fix the problem of importing express
+  }
+}
