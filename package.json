@@ -1,7 +1,7 @@
 {
   "name": "saas-boiler-cli",
   "type": "module",
-  "version": "1.1.8",
+  "version": "1.2.1",
   "description": "CLI tool for rapidStack",
   "main": "cli/index.js",
   "bin": "cli/index.js",
@@ -11,8 +11,16 @@
   "author": "eunice99x",
   "license": "ISC",
   "dependencies": {
+    "boxen": "^8.0.1",
+    "chalk": "^5.3.0",
+    "chalk-animation": "^2.0.3",
+    "figlet": "^1.8.0",
     "fs-extra": "^11.2.0",
+    "gradient-string": "^3.0.0",
     "inquirer": "^10.2.2",
-    "mysql2": "^3.11.3"
+    "mysql2": "^3.11.3",
+    "nanospinner": "^1.1.0",
+    "ora": "^8.1.0",
+    "terminal-link": "^3.0.0"
   }
 }

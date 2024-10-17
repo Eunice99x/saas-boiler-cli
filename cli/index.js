@@ -4,89 +4,197 @@ import path from "path";
 import { fileURLToPath } from "url";
 import inquirer from "inquirer";
 import fs from "fs-extra";
+import chalk from "chalk";
+import figlet from "figlet";
+import { createSpinner } from "nanospinner";
+import boxen from "boxen";
+import terminalLink from "terminal-link";
 
-// Get the directory of the current module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-async function main() {
-  const answers = await inquirer.prompt([
-    {
-      type: "list",
-      name: "frontend",
-      message: "Choose a frontend framework:",
-      choices: ["next", "angular", "nuxt"],
-    },
-    {
-      type: "list",
-      name: "backend",
-      message: "Choose a backend framwork:",
-      choices: ["express", "gofiber"],
-    },
-    // {
-    //   type: "list",
-    //   name: "database",
-    //   message: "Chosse a database:",
-    //   choices: ["mysql", "postgres", "mongodb", "supabase"],
-    // },
-  ]);
+const sleep = (ms = 2000) => new Promise((r) => setTimeout(r, ms));
 
-  console.log("Generating project with options:", answers);
+const FRAMEWORKS = {
+  FRONTEND: ["next", "angular", "nuxt"],
+  BACKEND: ["express", "gofiber", "django"],
+  DATABASE: ["mysql", "postgres", "supabase", "mongodb"],
+};
 
-  const { frontend, backend, database } = answers;
-  console.log("=================>", frontend, backend);
+const FRAMEWORK_MAP = {
+  express: "express",
+  gofiber: "golang",
+  django: "django",
+};
 
-  // Define paths to templates based on user choices
-  const templates = {
-    frontend: path.join(__dirname, "..", "packages", "frontend", frontend), // Updated path
-    backend: path.join(__dirname, "..", "packages", "backend", backend), // Updated path
-    // database: path.join(__dirname, "..", "packages", "database", database), // Updated path
+const displayBox = (content, options = {}) => {
+  console.log(
+    boxen(content, {
+      padding: 1,
+      margin: 1,
+      borderStyle: "round",
+      borderColor: "cyan",
+      ...options,
+    })
+  );
+};
+
+const displayWelcomeMessage = () => {
+  console.clear();
+  console.log(
+    chalk.cyan(
+      figlet.textSync("Project Gen", {
+        font: "Slant",
+        horizontalLayout: "full",
+      })
+    )
+  );
+
+  displayBox(chalk.white("Welcome to the modern project generator CLI"));
+  console.log("\n");
+};
+
+const promptUserChoices = async () => {
+  const questions = Object.entries(FRAMEWORKS).map(([key, choices]) => ({
+    type: "list",
+    name: key.toLowerCase(),
+    message: chalk.cyan(`🎨 Choose a ${key.toLowerCase()} framework:`),
+    choices,
+  }));
+
+  const answers = await inquirer.prompt(questions);
+
+  if (answers.frontend === "next") {
+    const { nextType } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "nextType",
+        message: chalk.cyan("🔧 Choose Next.js type:"),
+        choices: [
+          { name: "JavaScript", value: "next-js" },
+          { name: "TypeScript", value: "next-ts" },
+        ],
+      },
+    ]);
+    answers.frontend = nextType;
+  }
+
+  return answers;
+};
+
+const getTemplatePaths = (choices) => {
+  const { frontend, backend, database } = choices;
+  const basePath = path.join(__dirname, "..", "packages");
+  const frameworkForDatabase = FRAMEWORK_MAP[backend] || null;
+
+  return {
+    frontend: path.join(basePath, "frontend", frontend),
+    backend: path.join(basePath, "backend", backend),
+    database: frameworkForDatabase
+      ? path.join(basePath, "database", database, frameworkForDatabase)
+      : path.join(basePath, "database", database),
   };
+};
 
-  function doesItExist(templateTar) {
-    if (!fs.existsSync(templateTar)) {
-      console.log(`Source directory ${templateTar} does not exist.`);
+const ensureDirectoryExists = (dir) => {
+  if (!fs.existsSync(dir)) {
+    console.log(chalk.red(`Source directory ${dir} does not exist.`));
+    process.exit(1);
+  }
+};
+
+const createTargetDirectories = () => {
+  return ["frontend", "backend", "database"].map((dir) => {
+    const fullPath = path.join(process.cwd(), dir);
+    fs.mkdirpSync(fullPath);
+    return fullPath;
+  });
+};
+
+const copyTemplates = async (templates, targetDirs) => {
+  for (const [key, sourcePath] of Object.entries(templates)) {
+    const spinner = createSpinner(`Copying ${key} template...`).start();
+    await sleep(1000);
+    try {
+      await fs.copy(
+        sourcePath,
+        targetDirs[Object.keys(templates).indexOf(key)],
+        { overwrite: true }
+      );
+      spinner.success({
+        text: chalk.green(
+          `${
+            key.charAt(0).toUpperCase() + key.slice(1)
+          } template copied successfully!`
+        ),
+      });
+    } catch (error) {
+      spinner.error({
+        text: chalk.red(`Error copying ${key} template: ${error}`),
+      });
       process.exit(1);
     }
   }
+};
 
-  // Ensure the source directory exists
-  doesItExist(templates.frontend);
-  doesItExist(templates.backend);
-  // doesItExist(templates.database);
-
-  // Define the target directory for copying
-  const targetDir = path.join(process.cwd(), "frontend");
-  const targetDi1 = path.join(process.cwd(), "backend");
-  // const targetDi2 = path.join(process.cwd(), "database");
-
-  // Ensure the target directory exists
-  if (!fs.existsSync(targetDir)) {
-    fs.mkdirpSync(targetDir); // Create the target directory recursively
-  }
-  if (!fs.existsSync(targetDi1)) {
-    fs.mkdirpSync(targetDi1); // Create the target directory recursively
-  }
-  // if (!fs.existsSync(targetDi2)) {
-  //   fs.mkdirpSync(targetDi2); // Create the target directory recursively
-  // }
-
-  // Process templates (e.g., copy files)
+const main = async () => {
   try {
-    // Copy all contents from the source to the target directory
-    fs.copySync(templates.frontend, targetDir, {
-      overwrite: true, // Optional: overwrite existing files
+    displayWelcomeMessage();
+
+    const choices = await promptUserChoices();
+
+    const templates = getTemplatePaths(choices);
+
+    console.log("");
+
+    const checkingSpinner = createSpinner(
+      chalk.blue("Checking template directories...")
+    ).start();
+    await sleep(1500);
+    Object.values(templates).forEach(ensureDirectoryExists);
+    checkingSpinner.success({
+      text: chalk.green("✅ All template directories exist!"),
     });
-    fs.copySync(templates.backend, targetDi1, {
-      overwrite: true, // Optional: overwrite existing files
+
+    const creatingDirsSpinner = createSpinner(
+      chalk.blue("Creating target directories...")
+    ).start();
+    await sleep(1500);
+    const targetDirs = createTargetDirectories();
+    creatingDirsSpinner.success({
+      text: chalk.green("✅ Target directories created successfully!"),
     });
-    // fs.copySync(templates.database, targetDi2, {
-    //   overwrite: true, // Optional: overwrite existing files
-    // });
-    console.log("Project generated successfully!");
+
+    await copyTemplates(templates, targetDirs);
+
+    displayBox(
+      chalk.green.bold("🎉 Project generated successfully!") +
+        "\n\n" +
+        chalk.yellow("To get started, run the following commands:") +
+        "\n\n" +
+        chalk.cyan(
+          `cd frontend && npm install && npm run dev\ncd ../backend && npm install && npm run dev\ncd ../database && npm install`
+        ),
+      { borderColor: "green" }
+    );
+
+    const docsLink = terminalLink(
+      "Documentation",
+      "https://saas-boiler-cli-web.vercel.app/docs"
+    );
+    console.log(
+      chalk.blue(`\nFor more information, check out our ${docsLink}`)
+    );
   } catch (error) {
-    console.error("Error generating project:", error);
+    displayBox(
+      chalk.red.bold("❌ An error occurred:") + "\n\n" + error.message,
+      {
+        borderStyle: "double",
+        borderColor: "red",
+      }
+    );
+    process.exit(1);
   }
-}
+};
 
 main();

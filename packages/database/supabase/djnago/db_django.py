@@ -1,0 +1,1 @@
+# supabase connected to django
