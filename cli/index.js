@@ -9,22 +9,32 @@ import figlet from "figlet";
 import { createSpinner } from "nanospinner";
 import boxen from "boxen";
 import terminalLink from "terminal-link";
+import { execSync } from "child_process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const sleep = (ms = 2000) => new Promise((r) => setTimeout(r, ms));
 
+// Framework configurations
 const FRAMEWORKS = {
-  FRONTEND: ["next", "angular", "nuxt"],
-  BACKEND: ["express", "gin", "django"],
-  DATABASE: ["mysql", "postgres", "supabase", "mongodb"],
+  FULLSTACK: {
+    FRONTEND: ["next", "nuxt"],
+    DATABASE: ["mysql", "postgres", "supabase", "mongodb"],
+  },
+  SEPARATE: {
+    FRONTEND: ["next", "angular", "nuxt"],
+    BACKEND: ["express", "gin", "django"],
+    DATABASE: ["mysql", "postgres", "supabase", "mongodb"],
+  },
 };
 
-const FRAMEWORK_MAP = {
-  express: "express",
-  gin: "golang",
-  django: "django",
+const theme = {
+  primary: chalk.blue,
+  secondary: chalk.gray,
+  success: chalk.green,
+  error: chalk.red,
+  heading: chalk.bold.white,
 };
 
 const displayBox = (content, options = {}) => {
@@ -32,8 +42,8 @@ const displayBox = (content, options = {}) => {
     boxen(content, {
       padding: 1,
       margin: 1,
-      borderStyle: "round",
-      borderColor: "cyan",
+      borderStyle: "single",
+      borderColor: "gray",
       ...options,
     })
   );
@@ -42,69 +52,179 @@ const displayBox = (content, options = {}) => {
 const displayWelcomeMessage = () => {
   console.clear();
   console.log(
-    chalk.cyan(
+    theme.heading(
       figlet.textSync("Project Gen", {
-        font: "Slant",
-        horizontalLayout: "full",
+        font: "Standard",
+        horizontalLayout: "default",
       })
     )
   );
 
-  displayBox(chalk.white("Welcome to the modern project generator CLI"));
+  displayBox(theme.secondary("Modern project generator for web applications"), {
+    borderStyle: "single",
+  });
   console.log("\n");
 };
 
-const promptUserChoices = async () => {
-  const questions = Object.entries(FRAMEWORKS).map(([key, choices]) => ({
-    type: "list",
-    name: key.toLowerCase(),
-    message: chalk.cyan(`🎨 Choose a ${key.toLowerCase()} framework:`),
-    choices,
-  }));
+const promptProjectType = async () => {
+  return inquirer.prompt([
+    {
+      type: "list",
+      name: "projectType",
+      message: theme.primary("Select project type:"),
+      choices: ["Fullstack", "Separate Frontend/Backend"],
+    },
+  ]);
+};
 
-  const answers = await inquirer.prompt(questions);
+const promptFullstackChoices = async () => {
+  const answers = {};
 
-  if (answers.frontend === "next") {
-    const { nextType } = await inquirer.prompt([
+  const { frontend } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "frontend",
+      message: theme.primary("Select frontend framework:"),
+      choices: FRAMEWORKS.FULLSTACK.FRONTEND,
+    },
+  ]);
+  answers.frontend = frontend;
+
+  if (answers.frontend === "next" || answers.frontend === "nuxt") {
+    const { frameworkType } = await inquirer.prompt([
       {
         type: "list",
-        name: "nextType",
-        message: chalk.cyan("🔧 Choose Next.js type:"),
-        choices: [
-          { name: "JavaScript", value: "next-js" },
-          { name: "TypeScript", value: "next-ts" },
-        ],
+        name: "frameworkType",
+        message: theme.primary(`Select ${answers.frontend} variant:`),
+        choices: ["TypeScript", "JavaScript"],
       },
     ]);
-    answers.frontend = nextType;
+    answers.frontend = `${answers.frontend}-${
+      frameworkType.toLowerCase() === "typescript" ? "ts" : "js"
+    }`;
   }
+
+  const { database } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "database",
+      message: theme.primary("Select database:"),
+      choices: FRAMEWORKS.FULLSTACK.DATABASE,
+    },
+  ]);
+  answers.database = database;
 
   return answers;
 };
 
-const getTemplatePaths = (choices) => {
-  const { frontend, backend, database } = choices;
-  const basePath = path.join(__dirname, "..", "packages");
-  const frameworkForDatabase = FRAMEWORK_MAP[backend] || null;
+const promptSeparateChoices = async () => {
+  const answers = {};
 
-  return {
-    frontend: path.join(basePath, "frontend", frontend),
-    backend: path.join(basePath, "backend", backend),
-    database: frameworkForDatabase
-      ? path.join(basePath, "database", database, frameworkForDatabase)
-      : path.join(basePath, "database", database),
-  };
+  const { frontend } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "frontend",
+      message: theme.primary("Select frontend framework:"),
+      choices: FRAMEWORKS.SEPARATE.FRONTEND,
+    },
+  ]);
+  answers.frontend = frontend;
+
+  if (answers.frontend === "next" || answers.frontend === "nuxt") {
+    const { frameworkType } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "frameworkType",
+        message: theme.primary(`Select ${answers.frontend} variant:`),
+        choices: [
+          { name: "TypeScript", value: "next-ts" },
+          { name: "JavaScript", value: "next-js" },
+        ],
+      },
+    ]);
+    answers.frontend = `${answers.frontend}-${
+      frameworkType.toLowerCase() === "typescript" ? "ts" : "js"
+    }`;
+  }
+
+  const { backend } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "backend",
+      message: theme.primary("Select backend framework:"),
+      choices: FRAMEWORKS.SEPARATE.BACKEND,
+    },
+  ]);
+  answers.backend = backend;
+
+  if (answers.backend === "express") {
+    const { frameworkType } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "frameworkType",
+        message: theme.primary(`Select ${answers.backend} variant:`),
+        choices: [
+          { name: "TypeScript", value: "express-ts" },
+          { name: "JavaScript", value: "express-js" },
+        ],
+      },
+    ]);
+    answers.backend = `${answers.backend}-${
+      frameworkType.toLowerCase() === "typescript" ? "ts" : "js"
+    }`;
+  }
+
+  const { database } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "database",
+      message: theme.primary("Select database:"),
+      choices: FRAMEWORKS.SEPARATE.DATABASE,
+    },
+  ]);
+  answers.database = database;
+
+  return answers;
 };
 
-const ensureDirectoryExists = (dir) => {
-  if (!fs.existsSync(dir)) {
-    console.log(chalk.red(`Source directory ${dir} does not exist.`));
-    process.exit(1);
+const initGitRepo = async (projectPath) => {
+  const spinner = createSpinner("Initializing Git repository").start();
+  try {
+    execSync("git init", { cwd: projectPath });
+    const gitignore = `node_modules/\n.env\n.DS_Store\ndist/\nbuild/\n.next/\n.nuxt/`;
+    fs.writeFileSync(path.join(projectPath, ".gitignore"), gitignore);
+
+    spinner.success({
+      text: theme.success("Git repository initialized"),
+    });
+  } catch (error) {
+    spinner.error({
+      text: theme.error(`Git initialization failed: ${error.message}`),
+    });
   }
 };
 
-const createTargetDirectories = () => {
-  return ["frontend", "backend", "database"].map((dir) => {
+const getTemplatePaths = (choices, isFullstack) => {
+  const { frontend, backend, database } = choices;
+  const basePath = path.join(__dirname, "..", "packages");
+
+  let backendType = isFullstack ? "express" : backend.split("-")[0];
+  const databasePath = path.join(basePath, "database", database, backendType);
+
+  return {
+    frontend: path.join(basePath, "frontend", frontend),
+    ...(isFullstack
+      ? {}
+      : { backend: path.join(basePath, "backend", backend) }),
+    database: databasePath,
+  };
+};
+
+const createTargetDirectories = (isFullstack) => {
+  const dirs = isFullstack
+    ? ["frontend", "database"]
+    : ["frontend", "backend", "database"];
+  return dirs.map((dir) => {
     const fullPath = path.join(process.cwd(), dir);
     fs.mkdirpSync(fullPath);
     return fullPath;
@@ -113,27 +233,32 @@ const createTargetDirectories = () => {
 
 const copyTemplates = async (templates, targetDirs) => {
   for (const [key, sourcePath] of Object.entries(templates)) {
-    const spinner = createSpinner(`Copying ${key} template...`).start();
+    const spinner = createSpinner(`Copying ${key} template`).start();
     await sleep(1000);
     try {
       await fs.copy(
         sourcePath,
         targetDirs[Object.keys(templates).indexOf(key)],
-        { overwrite: true }
+        {
+          overwrite: true,
+        }
       );
       spinner.success({
-        text: chalk.green(
-          `${
-            key.charAt(0).toUpperCase() + key.slice(1)
-          } template copied successfully!`
-        ),
+        text: theme.success(`${key} template copied`),
       });
     } catch (error) {
       spinner.error({
-        text: chalk.red(`Error copying ${key} template: ${error}`),
+        text: theme.error(`Failed to copy ${key} template: ${error.message}`),
       });
       process.exit(1);
     }
+  }
+};
+
+const ensureDirectoryExists = (dir) => {
+  if (!fs.existsSync(dir)) {
+    console.log(theme.error(`Directory not found: ${dir}`));
+    process.exit(1);
   }
 };
 
@@ -141,58 +266,67 @@ const main = async () => {
   try {
     displayWelcomeMessage();
 
-    const choices = await promptUserChoices();
+    const { projectType } = await promptProjectType();
+    const isFullstack = projectType === "Fullstack";
+    const choices = isFullstack
+      ? await promptFullstackChoices()
+      : await promptSeparateChoices();
 
-    const templates = getTemplatePaths(choices);
+    const { initGit } = await inquirer.prompt([
+      {
+        type: "confirm",
+        name: "initGit",
+        message: theme.primary("Initialize Git repository?"),
+        default: true,
+      },
+    ]);
 
+    const templates = getTemplatePaths(choices, isFullstack);
     console.log("");
 
-    const checkingSpinner = createSpinner(
-      chalk.blue("Checking template directories...")
-    ).start();
-    await sleep(1500);
+    const checkingSpinner = createSpinner("Verifying templates").start();
+    await sleep(1000);
     Object.values(templates).forEach(ensureDirectoryExists);
-    checkingSpinner.success({
-      text: chalk.green("✅ All template directories exist!"),
-    });
+    checkingSpinner.success({ text: theme.success("Templates verified") });
 
     const creatingDirsSpinner = createSpinner(
-      chalk.blue("Creating target directories...")
+      "Creating project structure"
     ).start();
-    await sleep(1500);
-    const targetDirs = createTargetDirectories();
+    await sleep(1000);
+    const targetDirs = createTargetDirectories(isFullstack);
     creatingDirsSpinner.success({
-      text: chalk.green("✅ Target directories created successfully!"),
+      text: theme.success("Project structure created"),
     });
 
     await copyTemplates(templates, targetDirs);
 
+    if (initGit) {
+      await initGitRepo(process.cwd());
+    }
+
+    const startCommands = isFullstack
+      ? "cd frontend && npm install && npm run dev\ncd ../database && npm install"
+      : "cd frontend && npm install && npm run dev\ncd ../backend && npm install && npm run dev\ncd ../database && npm install";
+
     displayBox(
-      chalk.green.bold("🎉 Project generated successfully!") +
+      theme.heading("Project created successfully") +
         "\n\n" +
-        chalk.yellow("To get started, run the following commands:") +
+        theme.secondary("To start development:") +
         "\n\n" +
-        chalk.cyan(
-          `cd frontend && npm install && npm run dev\ncd ../backend && npm install && npm run dev\ncd ../database && npm install`
-        ),
-      { borderColor: "green" }
+        theme.primary(startCommands),
+      { borderColor: "gray" }
     );
 
     const docsLink = terminalLink(
       "Documentation",
       "https://saas-boiler-cli-web.vercel.app/docs"
     );
-    console.log(
-      chalk.blue(`\nFor more information, check out our ${docsLink}`)
-    );
+    console.log(theme.secondary(`\nView ${docsLink} for more information`));
   } catch (error) {
-    displayBox(
-      chalk.red.bold("❌ An error occurred:") + "\n\n" + error.message,
-      {
-        borderStyle: "double",
-        borderColor: "red",
-      }
-    );
+    displayBox(theme.error(`Error: ${error.message}`), {
+      borderStyle: "single",
+      borderColor: "red",
+    });
     process.exit(1);
   }
 };

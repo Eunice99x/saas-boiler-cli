@@ -7,7 +7,7 @@ A comprehensive and flexible SaaS boilerplate designed for modern developers.
 | Category              | Options                                                                                                                                          |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 🖥️ **Frontend**       | [Next.js](https://nextjs.org/), [Angular](https://angular.io/), [Nuxt](https://nuxt.com/)                                                        |
-| 🛠️ **Backend**        | [Gin](https://gin-gonic.com/), [Django](https://www.djangoproject.com/), [Express](https://expressjs.com/)                                      |
+| 🛠️ **Backend**        | [Gin](https://gin-gonic.com/), [Django](https://www.djangoproject.com/), [Express](https://expressjs.com/)                                       |
 | 💳 **Payments**       | [Stripe](https://stripe.com/), [Lemon Squeezy](https://www.lemonsqueezy.com/), [PayPal](https://www.paypal.com/)                                 |
 | 🔐 **Authentication** | [NextAuth](https://next-auth.js.org/), [Clerk](https://clerk.dev/), [Firebase](https://firebase.google.com/)                                     |
 | 🗄️ **Database**       | [MySQL](https://www.mysql.com/), [Postgres](https://www.postgresql.org/), [MongoDB](https://www.mongodb.com/), [Supabase](https://supabase.com/) |
@@ -23,11 +23,11 @@ npx saas-boiler-cli
 
 ## 📚 Documentation
 
-For detailed instructions and configuration options, visit our [documentation](https://example.com/docs).
+For detailed instructions and configuration options, visit our [documentation](https://saas-boiler-cli-web.vercel.app/docs).
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [contributing guidelines](CONTRIBUTING.md) for more details.
+We welcome contributions! Please see our [contributing guidelines](CONTRIBUTING.md) for more details. (soon)
 
 ## 📄 License
 
@@ -40,7 +40,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE.txt) 
 
 ## 📞 Support
 
-For support, please open an issue in the GitHub repository or contact us at support@example.com.
+For support, please open an issue in the GitHub repository or contact us at younesouterbah1@gmail.com
 
 ---
 
