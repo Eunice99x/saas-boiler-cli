@@ -7,7 +7,7 @@ A comprehensive and flexible SaaS boilerplate designed for modern developers.
 | Category              | Options                                                                                                                                          |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 🖥️ **Frontend**       | [Next.js](https://nextjs.org/), [Angular](https://angular.io/), [Nuxt](https://nuxt.com/)                                                        |
-| 🛠️ **Backend**        | [GoFiber](https://gofiber.io/), [Django](https://www.djangoproject.com/), [Express](https://expressjs.com/)                                      |
+| 🛠️ **Backend**        | [Gin](https://gin-gonic.com/), [Django](https://www.djangoproject.com/), [Express](https://expressjs.com/)                                      |
 | 💳 **Payments**       | [Stripe](https://stripe.com/), [Lemon Squeezy](https://www.lemonsqueezy.com/), [PayPal](https://www.paypal.com/)                                 |
 | 🔐 **Authentication** | [NextAuth](https://next-auth.js.org/), [Clerk](https://clerk.dev/), [Firebase](https://firebase.google.com/)                                     |
 | 🗄️ **Database**       | [MySQL](https://www.mysql.com/), [Postgres](https://www.postgresql.org/), [MongoDB](https://www.mongodb.com/), [Supabase](https://supabase.com/) |

@@ -17,13 +17,13 @@ const sleep = (ms = 2000) => new Promise((r) => setTimeout(r, ms));
 
 const FRAMEWORKS = {
   FRONTEND: ["next", "angular", "nuxt"],
-  BACKEND: ["express", "gofiber", "django"],
+  BACKEND: ["express", "gin", "django"],
   DATABASE: ["mysql", "postgres", "supabase", "mongodb"],
 };
 
 const FRAMEWORK_MAP = {
   express: "express",
-  gofiber: "golang",
+  gin: "golang",
   django: "django",
 };
 
