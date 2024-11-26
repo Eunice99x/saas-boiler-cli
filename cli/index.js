@@ -2,6 +2,7 @@
 
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from 'fs'
 import inquirer from "inquirer";
 import terminalLink from "terminal-link";
 import { displayWelcomeMessage, displayBox, theme } from "./utils/display.js";
@@ -18,11 +19,18 @@ const main = async () => {
   try {
     displayWelcomeMessage();
 
+    // for debugging in dev environment
+    console.log("Current working directory:", process.cwd());
+    console.log("CLI directory:", __dirname);
+    console.log("Project root contents:", fs.readdirSync(path.join(__dirname, '..')));
+
     const { projectType } = await promptProjectType();
     const isFullstack = projectType === "Fullstack";
     const choices = isFullstack
       ? await promptFullstackChoices()
       : await promptSeparateChoices();
+
+    console.log("User choices:", choices);
 
     const { initGit } = await inquirer.prompt([
       {
@@ -34,7 +42,7 @@ const main = async () => {
     ]);
 
     const templates = getTemplatePaths(choices, isFullstack);
-    console.log("");
+    console.log("Template paths:", templates);
 
     const checkingSpinner = createSpinner("Verifying templates").start();
     await sleep(1000);
@@ -82,5 +90,4 @@ const main = async () => {
     process.exit(1);
   }
 };
-
 main();
