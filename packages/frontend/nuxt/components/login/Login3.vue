@@ -3,7 +3,7 @@
         <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">
             Welcome Back
         </h2>
-        <form @submit.prevent="$emit('handleLogin')">
+        <form @submit.prevent="$emit('submit')">
             <div class="mb-4">
                 <label
                     for="email"
@@ -53,12 +53,11 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits } from "vue";
+import { defineProps, defineEmits } from "vue";
 
 // Props and emits for communication
 defineProps({
     credentials: Object,
 });
-
-defineEmits(["handleLogin"]);
+defineEmits(["submit"]);
 </script>

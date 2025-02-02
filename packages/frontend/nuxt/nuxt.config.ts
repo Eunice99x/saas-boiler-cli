@@ -12,13 +12,24 @@ export default defineNuxtConfig({
         "@nuxtjs/supabase",
     ],
 
+    runtimeConfig: {
+        public: {
+            authProvider: process.env.AUTH_PROVIDER,
+        },
+    },
+
     supabase: {
         redirectOptions: {
             login: "/auth/login",
-            callback: "/confirm",
+            callback: "/",
             include: undefined,
-            exclude: ["/auth/signup", "/", "/auth/confirm"], //exclude routes from redirect
-            cookieRedirect: true, // enable cookie based redirect
+            exclude: [
+                "/auth/signup",
+                "/",
+                "/auth/confirm",
+                "/auth/forget-password",
+            ], //exclude routes from redirect
+            cookieRedirect: false, // enable cookie based redirect
         },
     },
 

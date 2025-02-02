@@ -6,33 +6,30 @@
 </template>
 
 <script setup lang="ts">
-// Supabase clientuseSupabaseClient
-const supabase = useSupabaseClient();
+import { useToast } from "vue-toast-notification";
+import { ref } from "vue";
+
+const { $auth } = useNuxtApp();
 
 // Bidirectional variable for child to parent communication
 const credentials = ref({ email: "", password: "" });
 
-// Handle login authentication
 const handleLogin = async () => {
-    const { $toast } = useNuxtApp();
-    const { email, password } = credentials.value;
+    try {
+        const user = await $auth.login(
+            credentials.value.email,
+            credentials.value.password
+        );
+        useToast().success("Logged in successfully");
+        // save user data
 
-    if (!email || !password) {
-        return console.error("Please provide email and password");
-    }
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-    });
-    if (error) {
-        $toast.error(error.message);
-        console.error("Error logging in:", error.message);
-    } else {
-        $toast.success("User logged in");
-        // Redirect to dashboard
-        await navigateTo("/");
-        console.log("User logged in:", data);
+        // Redirect to the home page
+        navigateTo("/");
+    } catch (error) {
+        useToast().error(
+            error instanceof Error ? error.message : "Login failed"
+        );
+        console.error("Login failed:", error);
     }
 };
 </script>

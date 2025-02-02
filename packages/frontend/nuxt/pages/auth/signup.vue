@@ -8,21 +8,25 @@
 </template>
 
 <script lang="ts" setup>
-const supabase = useSupabaseClient();
+import { useToast } from "vue-toast-notification";
 const credentials = ref({ email: "", password: "" });
 
+const { $auth } = useNuxtApp();
+
 const handleSignup = async () => {
-    const { email, password } = credentials.value;
+    try {
+        const { email, password } = credentials.value;
 
-    if (!email || !password) {
-        return console.error("Please provide email and password");
-    }
+        const data = await $auth.signUp(email, password);
 
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) {
-        console.error("Error signing up:", error.message);
-    } else {
-        console.log("User signed up:", data);
+        useToast().success("User signed up");
+        navigateTo("/auth/login");
+    } catch (error) {
+        useToast().error(`${error instanceof Error ? error.message : error}`);
+        console.error(
+            "Error signing up:",
+            error instanceof Error ? error.message : error
+        );
     }
 };
 </script>
